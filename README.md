@@ -162,6 +162,8 @@ stage5/_template_build.py       the verdict-and-draft file Claude fills per run
 engine/                 gates, scoring, email ladder, comment check, quota guard, YouTube data layer
 calibration/template.html       the calibration page
 scripts/leak-scan.sh    checks no brand or creator name is about to be committed (patterns in .leak-patterns.local)
+tests/                  offline checks of the skill, settings, safety rules and engine
+SECURITY.md  CONTRIBUTING.md  CHANGELOG.md  CODE_OF_CONDUCT.md
 ```
 
 ## Troubleshooting
@@ -173,6 +175,28 @@ scripts/leak-scan.sh    checks no brand or creator name is about to be committed
 | Almost everyone rejected on geography | The home markers in your config are too narrow. Ask Claude to show the rejected bios and widen them with you |
 | Few creators found | Add searches to `lanes.keyword`, phrased the way a viewer would type them, and include your market |
 
-## Licence
+## You are the sender
 
-MIT. See [LICENSE](LICENSE).
+Every draft is a suggestion. You read it, you decide, and anything you send is yours. The tool is
+provided as-is under the MIT licence, with no warranty and no guarantee that a verdict, an audience
+estimate or a draft is correct. Security and privacy in detail: [SECURITY.md](SECURITY.md).
+
+## Support
+
+Maintained by a small team, best effort. **Supported today:** macOS, in Claude Code. Linux and
+Windows (WSL) should work but are less tested. Bugs and setup problems go in
+[Issues](../../issues/new/choose), questions and ideas in [Discussions](../../discussions). We read
+everything and fix what affects the most people first; we can't offer one-to-one setup help or
+response times.
+
+## Feedback
+
+- **Something broken?** [Open an issue](../../issues/new/choose) with the "Bug" template.
+- **A creator passed or rejected wrongly, or a draft that wasn't good enough?** Use the
+  "Shortlist quality" template, with fictional or redacted examples. This is how the sourcing
+  improves for everyone.
+- **A security problem?** Report it privately: see [SECURITY.md](SECURITY.md).
+- If this saves you time, a star helps other partnership people find it.
+
+Maintained by [Fluencrs](https://github.com/hakon-junge). See [CONTRIBUTING.md](CONTRIBUTING.md).
+Licensed [MIT](LICENSE).

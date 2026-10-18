@@ -49,4 +49,5 @@ def snapshot(c, handle, videos):
 
 def dump_json(obj, path):
     os.makedirs(os.path.dirname(path), exist_ok=True)
-    json.dump(obj, open(path, "w"), indent=1, ensure_ascii=False)
+    with open(path, "w") as f:
+        json.dump(obj, f, indent=1, ensure_ascii=False)

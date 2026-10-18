@@ -1,0 +1,27 @@
+name: Shortlist quality
+description: A creator was passed or rejected wrongly, a score or audience estimate looked off, or a draft wasn't good enough.
+labels: [shortlist-quality]
+body:
+  - type: markdown
+    attributes:
+      value: "Use fictional or fully redacted examples: no real brand names, creator names, emails or fees. This is the most useful feedback there is."
+  - type: textarea
+    id: situation
+    attributes:
+      label: The situation
+      description: What kind of brand and market (fictional is fine), and what the run was looking for.
+    validations:
+      required: true
+  - type: textarea
+    id: call
+    attributes:
+      label: What the engine or Claude did
+      description: The verdict, the score breakdown, the audience estimate or the draft, redacted.
+    validations:
+      required: true
+  - type: textarea
+    id: should
+    attributes:
+      label: What an experienced partnerships manager would have done, and why
+    validations:
+      required: true

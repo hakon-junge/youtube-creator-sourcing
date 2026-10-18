@@ -25,7 +25,8 @@ def _terms_rx(terms):
 
 class Cfg:
     def __init__(self, path):
-        self.raw = yaml.safe_load(open(path))
+        with open(path) as f:
+            self.raw = yaml.safe_load(f)
         c = self.raw
         self.core = _rx(c["core_rx"])
         self.domain = _rx(c["domain_rx"])  # the DOMAIN signal core_rx requires

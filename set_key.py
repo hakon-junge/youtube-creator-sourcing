@@ -25,7 +25,10 @@ KEYS = {
 
 
 def write_key(name, value):
-    lines = open(ENV).read().splitlines() if os.path.exists(ENV) else []
+    lines = []
+    if os.path.exists(ENV):
+        with open(ENV) as f:
+            lines = f.read().splitlines()
     out, done = [], False
     for l in lines:
         if l.strip().startswith(name + "="):
@@ -37,7 +40,8 @@ def write_key(name, value):
         out.append("%s=%s" % (name, value))
     old = os.umask(0o077)
     try:
-        open(ENV, "w").write("\n".join(out) + "\n")
+        with open(ENV, "w") as f:
+            f.write("\n".join(out) + "\n")
     finally:
         os.umask(old)
     os.chmod(ENV, 0o600)

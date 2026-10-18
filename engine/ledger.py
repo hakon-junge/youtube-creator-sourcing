@@ -53,9 +53,11 @@ def charge(provider, units, stage, endpoint):
     day = d.setdefault(str(date.today()), {})
     day[provider] = day.get(provider, 0) + (units or 0)
     os.makedirs(os.path.dirname(PATH), exist_ok=True)
-    json.dump(d, open(PATH, "w"), indent=1)
+    with open(PATH, "w") as f:
+        json.dump(d, f, indent=1)
     if _run_path():
-        json.dump({"used": _run["used"], "calls": _run["calls"]}, open(_run_path(), "w"), indent=1)
+        with open(_run_path(), "w") as f:
+            json.dump({"used": _run["used"], "calls": _run["calls"]}, f, indent=1)
 
 
 def summary():

@@ -1,0 +1,27 @@
+name: Bug
+description: Something doesn't work (setup, the API key, a run, a crash).
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: "Never paste API keys or the contents of `.env`. Redact brand names, creator names and email addresses."
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: asked
+    attributes:
+      label: What did you ask Claude to do?
+  - type: textarea
+    id: doctor
+    attributes:
+      label: Output of `.venv/bin/python doctor.py`
+      description: It never prints a key.
+      render: text
+  - type: input
+    id: version
+    attributes:
+      label: Version (from CHANGELOG.md) and your OS
