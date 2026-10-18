@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./setup.sh)",
+      "Bash(bash setup.sh)",
+      "Bash(./run_brand.sh:*)",
+      "Bash(.venv/bin/python doctor.py:*)",
+      "Bash(.venv/bin/python new_brand.py:*)",
+      "Bash(.venv/bin/python import_seeds.py:*)",
+      "Bash(.venv/bin/python phase1.py:*)",
+      "Bash(.venv/bin/python phase2.py:*)",
+      "Bash(.venv/bin/python phase3.py:*)",
+      "Bash(.venv/bin/python regate.py:*)",
+      "Bash(.venv/bin/python calibrate.py:*)",
+      "Bash(.venv/bin/python stage5/:*)"
+    ],
+    "deny": [
+      "Read(**/.env)",
+      "Edit(**/.env)",
+      "Bash(cat .env:*)",
+      "Bash(less .env:*)",
+      "Bash(head .env:*)",
+      "Bash(tail .env:*)",
+      "Bash(grep:* .env)",
+      "Bash(git add -f:*)",
+      "Bash(git add --force:*)"
+    ]
+  }
+}

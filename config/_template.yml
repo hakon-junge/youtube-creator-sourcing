@@ -1,0 +1,102 @@
+# BRAND CONFIG TEMPLATE. new_brand.py copies this to config/<slug>.yml.
+# Every TODO must be resolved before run_brand.sh will start (it refuses while any remain).
+# Values are PROPOSED from the brand's website and public sources; the operator signs off.
+company: TODO_COMPANY
+website: TODO_URL
+brand_terms:              # how the brand is written in captions
+- TODO
+brand_handles:            # the brand's own YouTube handles and channel names
+- TODO
+existing_partners: []     # handles already working with the brand: skipped, never re-sourced
+
+# Direct = same product, same buyer. Indirect = same buyer, different product.
+# edge = where this brand wins against a direct competitor: better | cheaper | more_interesting | none
+# A creator with paid work for a direct competitor is the strongest audience signal and is flagged for
+# exclusivity, never rejected. With edge: none that signal counts for half.
+direct_competitors:
+- {name: TODO, terms: [TODO], handles: [TODO], edge: TODO}
+indirect_competitors:
+- {name: TODO, terms: [TODO], handles: [TODO]}
+
+# How sponsorship shows up in a video description. Descriptions are read for the last 50 uploads.
+sponsor_marker_rx: sponsored by|this video is sponsored|thanks to .{0,40} for sponsoring|thank you to .{0,40} for sponsoring|in partnership with|paid partnership|paid promotion|\#ad\b|\#sponsored|\bAD\b ?[|:-]|gifted by|use (my )?code|discount code|\bcode\b.{0,25}\b(for|off)\b|% off (your|with)|affiliate link
+
+geo:
+  mode: TODO              # reject = cannot buy outside these markets | note = record only
+  markets: [TODO]         # ISO country codes, the first is used as the search country
+  market_langs: [TODO]    # languages creators in these markets post in
+  # Words and places that show a creator is in the market / outside it. Leave these two out to use
+  # the built-in UK and Ireland vocabulary.
+  home_markers_rx: TODO
+  out_markers_rx: TODO
+  # Audience geography: an estimate per creator from commenter countries, comment times, words and
+  # places in comments, and the creator's own signals (engine/audience_geo.py). Free; best with an API key.
+  audience_target:
+    countries: []         # where most of the audience should be; empty = the markets above
+    min_share: 0.5        # the share of the audience that should be there
+    city: ""              # optional hyperlocal target, e.g. London or New York (read from place mentions)
+    city_markers: []      # extra words for that city: neighbourhoods, local slang
+    action: flag          # flag (default) | reject: only on a clear miss with medium or high confidence
+  audience_videos: 3      # videos sampled for the estimate (about 2 quota units each)
+
+band:
+  min_followers: 1000     # subscribers
+  max_followers: 250000
+dormancy_days: 90
+min_median_views: 1000    # median of recent long-form videos
+target_views: [1000, 10000]
+recent_posts: 10
+history_posts: 50         # uploads read per channel (2 quota units with an API key; 15 without one)
+min_post_age_days: 3      # newer videos have not collected their views yet and stay out of the median
+format_focus: TODO        # longform_first (long-form, Shorts only for Shorts-led channels) | longform (long-form only) | shorts (Shorts only)
+min_longform: 3
+min_shorts: 5             # a channel with too few long-form videos is judged on its Shorts when it has at least this many           # fewer long-form videos than this in the history: a Shorts channel, rejected
+min_domain_share: 0.2     # below this share of long-form titles on the domain: reject
+flag_domain_share: 0.6    # below this share of the last 10 titles: flag as a side theme and rank lower
+heavy_link_page: 12       # links on the creator's link page from which promotion counts as heavy
+hold_auto: true           # keep on until the scoring has been calibrated over several runs
+
+search_backend: keyless   # keyless = free search, quota goes to channels and comments | api = 100 units a search
+max_searches: 40
+results_per_search: 25
+max_profiles: 220         # channels read per run (about 3 units each)
+max_deep: 30              # channels that get the comment check, best score first (about 3 units each)
+transcripts_top: 8        # entry-video transcripts for the highest-ranked channels (needs the optional ScrapeCreators key)
+comments_per_post: 100
+collab_suffix: review     # appended to each brand name in the competitor searches
+caps:
+  serper: 15              # optional web searches for a missing email
+  scrapecreators: 12      # optional transcripts of entry videos, 1 credit each
+
+# weights:                # optional: override the score weights (they must add up to 100)
+#   views: 20
+#   relevance: 15
+#   contact: 15
+#   audience: 25
+#   geography: 10
+#   brand_proof: 15
+
+# Seeds: your own best YouTube creators, imported with import_seeds.py (a performance CSV or just a list).
+# Each run searches next to them (lateral search) and never sources them. Leave this out for the defaults.
+seeds:
+  share: 0.4              # share of max_searches that goes to lateral searches when seeds are imported
+  per_seed: 2             # top recent on-topic uploads per seed, used when the imported titles run out
+  content_mode: titles    # titles (free default): real titles + lookalikes | transcripts (upgrade): adds transcript variations, needs a ScrapeCreators key
+  split: {titles: 0.45, lookalike: 0.40, variations: 0.15}   # the lateral budget; variations only run in transcript mode
+  cooldown_days: 21       # a seed walked more recently waits, so runs rotate through your seeds
+  window_days: 180        # only results from this many days count at import: the engine follows what works now
+  stale_days: 60          # the digest asks for a fresh import after this many days
+  suffix: TODO            # the market word added to each lateral search, as in the keyword lane (e.g. uk), or "" for none
+
+lanes:
+  keyword:                # 15-30 searches for the MOMENTS the product matters, as a viewer would type them, with the market in them
+  - TODO
+  competitor_collab: true # one search per brand and competitor: "<name> <collab_suffix>"
+
+core_rx: TODO             # the vocabulary of creators who TEACH or SHOW the buyer something (all languages)
+domain_rx: TODO           # the DOMAIN signal core_rx requires (for a houseplant brand: plant, houseplant, monstera, repot)
+off_hard_rx: TODO         # content that never fits, at any reach
+off_soft_rx: try not to laugh|compilation|fails|prank|reaction|meme page|repost|daily memes
+
+corporate_names: []       # retailers, media and organisations in this niche that are not creators
+corporate_rx: \b(ltd|limited|inc|llc|gmbh)\b\.?$|©|®|™|all rights reserved|official (account|page|channel)|shop now|free delivery|order (now|online)|we deliver|our products|worldwide shipping|book (now|online)|makers of|small batch|registered charity|\bcharity\b|non-?profit|we (make|sell|ship|deliver)|our (products|range|collection|store)

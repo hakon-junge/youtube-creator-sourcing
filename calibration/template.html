@@ -1,0 +1,244 @@
+<title>__COMPANY__ YouTube Calibration</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a review desk. Funnel summary on top, one filter bar, then a ledger of creators;
+   each row opens into evidence on the left and the reviewer's feedback form on the right. */
+:root{
+  --bg:#f3f5f7; --panel:#ffffff; --ink:#18212b; --muted:#5b6876; --line:#d6dce3; --accent:#1f5fa8; --accent-ink:#ffffff;
+  --good:#1d7a4f; --good-bg:#e2f3ea; --warn:#8a5a00; --warn-bg:#fbefd2; --bad:#a3322b; --bad-bg:#f9e3e0; --idle:#52606d; --idle-bg:#e6eaee;
+  --display:"IBM Plex Sans Condensed","Arial Narrow",Arial,sans-serif; --body:"IBM Plex Sans",-apple-system,"Segoe UI",Arial,sans-serif; --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12171d; --panel:#1b222b; --ink:#e6ebf0; --muted:#98a5b3; --line:#303a46; --accent:#6aa9ee; --accent-ink:#0d1319;
+  --good:#6fd3a0; --good-bg:#17352a; --warn:#f0c463; --warn-bg:#3a2f12; --bad:#f09088; --bad-bg:#40201d; --idle:#a9b5c1; --idle-bg:#27313c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12171d; --panel:#1b222b; --ink:#e6ebf0; --muted:#98a5b3; --line:#303a46; --accent:#6aa9ee; --accent-ink:#0d1319;
+  --good:#6fd3a0; --good-bg:#17352a; --warn:#f0c463; --warn-bg:#3a2f12; --bad:#f09088; --bad-bg:#40201d; --idle:#a9b5c1; --idle-bg:#27313c; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5}
+.wrap{max-width:1120px;margin:0 auto;padding-inline:16px;padding-block:28px 64px;display:flex;flex-direction:column;gap:20px}
+h1{font-family:var(--display);font-size:30px;line-height:1.15;margin:0;text-wrap:balance}
+h2{font-family:var(--display);font-size:18px;margin:0}
+.sub{color:var(--muted);margin:4px 0 0;max-width:68ch}
+.funnel{display:flex;flex-wrap:wrap;gap:8px 0;align-items:stretch}
+.step{background:var(--panel);border:1px solid var(--line);padding:10px 14px;min-width:0;flex:1 1 150px}
+.step + .step{border-left-width:0}
+.step b{display:block;font-family:var(--mono);font-size:22px;font-weight:500;font-variant-numeric:tabular-nums}
+.step span{color:var(--muted);font-size:13px}
+.panel{background:var(--panel);border:1px solid var(--line);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+textarea,input[type=search],select{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:8px 10px;width:100%;box-sizing:border-box}
+textarea{min-height:76px;resize:vertical}
+button{font:inherit;cursor:pointer;border-radius:4px;border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:7px 12px}
+button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+button:focus-visible,textarea:focus-visible,input:focus-visible,select:focus-visible,.row-head:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:10px;display:flex;flex-direction:column;gap:10px;border-bottom:1px solid var(--line)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border-radius:999px;padding:5px 12px;font-size:13px}
+.chip[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip i{font-style:normal;font-family:var(--mono);opacity:.75;margin-left:4px}
+.tools{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.tools input[type=search]{flex:1 1 220px;width:auto}
+.tools select{flex:0 1 260px;width:auto}
+.tools label{display:flex;gap:6px;align-items:center;font-size:13px;color:var(--muted)}
+.list{display:flex;flex-direction:column;border:1px solid var(--line);background:var(--panel)}
+.row + .row{border-top:1px solid var(--line)}
+.row-head{display:grid;grid-template-columns:minmax(0,1.6fr) 92px 92px 62px minmax(0,2fr) 96px;gap:10px;align-items:center;padding:10px 14px;cursor:pointer;width:100%;text-align:left;border:0;border-radius:0;background:transparent}
+.row-head:hover{background:var(--bg)}
+.who{min-width:0;display:flex;flex-direction:column}
+.who b{font-weight:600;overflow-wrap:anywhere}
+.who small,.why small{color:var(--muted);font-size:12.5px}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:13.5px;text-align:right}
+.num small{display:block;font-family:var(--body);color:var(--muted);font-size:11.5px}
+.why{min-width:0;font-size:13.5px;overflow-wrap:anywhere}
+.pill{display:inline-block;border-radius:3px;padding:2px 8px;font-size:12px;font-weight:600;letter-spacing:.02em;white-space:nowrap}
+.p-advance{background:var(--good-bg);color:var(--good)} .p-review{background:var(--warn-bg);color:var(--warn)}
+.p-hold,.p-partner{background:var(--idle-bg);color:var(--idle)} .p-reject{background:var(--bad-bg);color:var(--bad)}
+.fbmark{font-size:12px;color:var(--muted);text-align:right}
+.fbmark.done{color:var(--good);font-weight:600}
+.detail{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:18px;padding:6px 14px 18px;border-top:1px dashed var(--line)}
+.detail > div{min-width:0;display:flex;flex-direction:column;gap:12px}
+.kv{display:grid;grid-template-columns:minmax(0,150px) minmax(0,1fr);gap:4px 12px;font-size:13.5px;margin:0}
+.kv dt{color:var(--muted)} .kv dd{margin:0;overflow-wrap:anywhere}
+.label{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+ul.plain{margin:0;padding-left:18px;font-size:13.5px;display:flex;flex-direction:column;gap:3px}
+ul.plain li{overflow-wrap:anywhere}
+.flag{color:var(--warn)}
+.draft{white-space:pre-wrap;font-size:13.5px;background:var(--bg);border:1px solid var(--line);padding:12px;border-radius:4px;overflow-wrap:anywhere}
+.form{background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:12px;display:flex;flex-direction:column;gap:10px;align-self:start;width:100%;box-sizing:border-box}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button[aria-pressed=true]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.status{font-size:13px;color:var(--muted);min-height:1.4em}
+.status.err{color:var(--bad)} .status.ok{color:var(--good)}
+a{color:var(--accent)}
+.empty{padding:28px 14px;color:var(--muted);text-align:center}
+.notice{background:var(--warn-bg);color:var(--warn);padding:10px 14px;border-radius:4px;font-size:13.5px}
+@media (max-width:760px){
+  .row-head{grid-template-columns:minmax(0,1fr) auto;row-gap:4px}
+  .row-head .num,.row-head .why{grid-column:1 / -1;text-align:left}
+  .row-head .num small{display:inline;margin-left:6px}
+  .detail{grid-template-columns:minmax(0,1fr)}
+  .step + .step{border-left-width:1px}
+}
+@media (prefers-reduced-motion:no-preference){.row-head{transition:background .12s}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>__COMPANY__ on YouTube: calibrate the first run</h1>
+    <p class="sub">The run is done and the calls should be close. To make them yours, spend about 20 minutes here: open each creator, judge the call the way you would in your own sourcing, and say what should have decided it. Where you agree, mark it right and move on. Your feedback is applied before the next run.</p>
+  </header>
+
+  <section class="funnel" id="funnel" aria-label="Run funnel"></section>
+
+  <section class="panel">
+    <h2>Overall feedback on this run</h2>
+    <p class="sub">Anything that applies across creators: the gates, the scoring, the kind of creator you want more or less of, the drafts.</p>
+    <textarea id="general-note" placeholder="For example: geography should be confirmed before anything else; I would rather see 30 nano creators than 5 big ones..."></textarea>
+    <div class="tools"><button class="primary" id="general-save">Save overall feedback</button><span class="status" id="general-status"></span></div>
+  </section>
+
+  <div id="db-notice" class="notice" hidden>This copy of the page can't save feedback by itself. Write your feedback as normal, then use "Copy my feedback" and paste it back to Claude.</div>
+  <div class="tools"><button id="copy-all" type="button">Copy my feedback</button><span class="status" id="copy-status"></span><span class="status" id="hidden-note"></span></div>
+
+  <section>
+    <div class="bar">
+      <div class="chips" id="chips" role="group" aria-label="Filter by decision"></div>
+      <div class="tools">
+        <input type="search" id="q" placeholder="Search handle, reason or note" aria-label="Search">
+        <select id="reason" aria-label="Filter by engine reason"></select>
+        <label><input type="checkbox" id="todo"> Only rows without my feedback</label>
+        <span class="status" id="progress"></span>
+      </div>
+    </div>
+    <div class="list" id="list"><div class="empty">Loading creators…</div></div>
+  </section>
+</div>
+
+<script type="application/json" id="data">__DATA__</script>
+<script>
+(function(){
+var D = JSON.parse(document.getElementById("data").textContent);
+var GROUPS = [["all","All"],["advance","Advance"],["review","Human review"],["hold","Hold"],["vet_reject","Rejected in vetting"],["engine_reject","Rejected by the gates"]];
+var PILL = {advance:["Advance","p-advance"],review:["Review","p-review"],hold:["Hold","p-hold"],vet_reject:["Vetting reject","p-reject"],regate_reject:["Gate-fix reject","p-reject"],engine_reject:["Gate reject","p-reject"],partner:["Existing partner","p-partner"]};
+var CALLS = [["agree","Right call"],["should_pass","Should have passed"],["should_fail","Should have failed"],["unsure","Not sure"]];
+var SCORES = [["too_low","Score too low"],["right","Score about right"],["too_high","Score too high"]];
+var state = {group:"all", q:"", reason:"", todo:false, open:{}}, fb = {}, db = null, dirty = {};
+var $ = function(id){return document.getElementById(id)};
+function el(tag, attrs, kids){var e=document.createElement(tag);for(var k in (attrs||{})){if(k==="text")e.textContent=attrs[k];else if(k==="class")e.className=attrs[k];else e.setAttribute(k,attrs[k])}(kids||[]).forEach(function(c){if(c)e.appendChild(typeof c==="string"?document.createTextNode(c):c)});return e}
+function n(v){return v==null?"–":Number(v).toLocaleString("en-GB")}
+function pct(v){return v==null?"–":Math.round(v*100)+"%"}
+function local(key,val){try{if(val===undefined)return localStorage.getItem(key);localStorage.setItem(key,val)}catch(e){return null}}
+
+// ---- funnel ----
+D.funnel.forEach(function(s){$("funnel").appendChild(el("div",{class:"step"},[el("b",{text:n(s.n)}),el("span",{text:s.label})]))});
+
+// ---- filters ----
+function counts(){var c={all:D.creators.length};D.creators.forEach(function(r){c[r.group]=(c[r.group]||0)+1});return c}
+function drawChips(){var c=counts(),box=$("chips");box.textContent="";GROUPS.forEach(function(g){if(g[0]!=="all"&&!c[g[0]])return;var b=el("button",{class:"chip","aria-pressed":String(state.group===g[0])},[g[1],el("i",{text:String(c[g[0]]||0)})]);b.addEventListener("click",function(){state.group=g[0];drawChips();draw()});box.appendChild(b)})}
+(function(){var sel=$("reason"),seen={};sel.appendChild(el("option",{value:"",text:"Any engine reason"}));D.creators.forEach(function(r){if(r.reason_label&&!seen[r.reason_label]){seen[r.reason_label]=1}});Object.keys(seen).sort().forEach(function(k){sel.appendChild(el("option",{value:k,text:k}))})})();
+$("q").addEventListener("input",function(e){state.q=e.target.value.toLowerCase();draw()});
+$("reason").addEventListener("change",function(e){state.reason=e.target.value;draw()});
+$("todo").addEventListener("change",function(e){state.todo=e.target.checked;draw()});
+
+function matches(r){
+  if(state.group!=="all"&&r.group!==state.group)return false;
+  if(state.reason&&r.reason_label!==state.reason)return false;
+  if(state.todo&&fb[r.h])return false;
+  if(state.q){var hay=(r.h+" "+(r.name||"")+" "+(r.reason_label||"")+" "+(r.why||"")+" "+((fb[r.h]||{}).note||"")).toLowerCase();if(hay.indexOf(state.q)<0)return false}
+  return true}
+
+// ---- rows ----
+function head(r){
+  var p=PILL[r.group], f=fb[r.h];
+  var h=el("button",{class:"row-head","aria-expanded":String(!!state.open[r.h]),id:"head-"+r.h},[
+    el("span",{class:"who"},[el("b",{text:"@"+r.h}),el("small",{text:(r.name?r.name+" · ":"")+(r.lanes||[]).join(", ").replace(/_/g," ")})]),
+    el("span",{class:"num"},[n(r.subscribers),el("small",{text:"subscribers"})]),
+    el("span",{class:"num"},[n(r.med),el("small",{text:"long-form median"})]),
+    el("span",{class:"num"},[r.score==null?"–":String(r.score),el("small",{text:"score"})]),
+    el("span",{class:"why"},[el("span",{class:"pill "+p[1],text:p[0]})," ",el("small",{text:r.why||r.reason_label||""})]),
+    el("span",{class:"fbmark"+(f?" done":""),text:f?(CALLS.filter(function(c){return c[0]===f.call})[0]||["Feedback saved"])[1]:"No feedback yet"})]);
+  h.addEventListener("click",function(){state.open[r.h]=!state.open[r.h];draw()});
+  return h}
+function kv(pairs){var dl=el("dl",{class:"kv"});pairs.forEach(function(p){if(p[1]==null||p[1]==="")return;dl.appendChild(el("dt",{text:p[0]}));var dd=el("dd");if(typeof p[1]==="string")dd.textContent=p[1];else dd.appendChild(p[1]);dl.appendChild(dd)});return dl}
+function list(items,cls){var ul=el("ul",{class:"plain"});items.forEach(function(t){var li=el("li",{class:cls||""});if(typeof t==="string")li.textContent=t;else li.appendChild(t);ul.appendChild(li)});return ul}
+function link(url,text){return el("a",{href:url,target:"_blank",rel:"noopener",text:text||url})}
+function seg(id,opts,value,onPick){var box=el("div",{class:"seg",role:"group",id:id});opts.forEach(function(o){var b=el("button",{type:"button","aria-pressed":String(value===o[0]),text:o[1]});b.addEventListener("click",function(){onPick(value===o[0]?null:o[0])});box.appendChild(b)});return box}
+
+function detail(r){
+  var L=el("div"),R=el("div");
+  L.appendChild(kv([
+    ["Profile",link(r.url)],
+    ["Engine decision",(r.lane||"")+(r.reason?" - "+r.reason:"")],
+    ["Vetting verdict",r.verdict?r.verdict+(r.why?": "+r.why:""):null],
+    ["Format judged",r.format||null],
+    ["Views",r.med==null?null:"long-form median "+n(r.med)+", highest "+n(r.max)+" over the last "+n(r.nposts)+" videos"],
+    ["Engagement",r.er==null?null:(r.er*100).toFixed(1)+"% per view · "+r.ppw+" long-form a week · last upload "+r.dsl+" days ago"],
+    ["On-topic videos",r.ds==null?null:pct(r.ds)+" of the last 10 long-form titles, "+pct(r.dsh)+" of all read"],
+    ["Geography",r.geo_note||(r.geo?"engine read: "+r.geo:null)],
+    ["Email",r.email_step?"found ("+r.email_step.replace(/_/g," ")+")":(r.group==="engine_reject"||r.group==="partner"?null:"none found")],
+    ["Bio",r.bio]]));
+  if(r.notable&&r.notable.length){L.appendChild(el("div",{class:"label",text:"Posts worth opening"}));L.appendChild(list(r.notable.map(function(e){return link(e.url,e.label)})))}
+  if(r.rels&&r.rels.length){L.appendChild(el("div",{class:"label",text:"Brand history"}));L.appendChild(list(r.rels))}
+  if(r.score_why&&r.score_why.length){L.appendChild(el("div",{class:"label",text:"How the score of "+r.score+" was built"}));L.appendChild(list(r.score_why))}
+  var flags=(r.vflags||[]).concat(r.flags||[]);
+  if(flags.length){L.appendChild(el("div",{class:"label",text:"Flags"}));L.appendChild(list(flags,"flag"))}
+  if(r.aud){L.appendChild(el("div",{class:"label",text:"Audience check (score "+r.aud.score+", uncalibrated)"}));L.appendChild(list([r.aud.summary].concat(r.aud.samples.map(function(s){return "“"+s+"”"}))))}
+  if(r.entry&&r.entry.length){L.appendChild(el("div",{class:"label",text:"Entry posts"}));L.appendChild(list(r.entry.map(function(e){var s=el("span");s.appendChild(link(e.url,e.label||"Open post"));if(e.caption)s.appendChild(document.createTextNode(" - "+e.caption));return s})))}
+  if(r.draft){L.appendChild(el("div",{class:"label",text:"Draft ("+r.send_via+", not sent)"}));L.appendChild(el("div",{class:"draft",text:r.draft}))}
+
+  var cur=Object.assign({call:null,score:null,note:"",draft_note:""},fb[r.h]||{},dirty[r.h]||{});
+  function set(k,v){dirty[r.h]=Object.assign({},dirty[r.h]||{},(function(){var o={};o[k]=v;return o})());local("audit-draft-"+r.h,JSON.stringify(dirty[r.h]))}
+  var form=el("div",{class:"form"});
+  form.appendChild(el("div",{class:"label",text:"Was this the right call?"}));
+  form.appendChild(seg("call-"+r.h,CALLS,cur.call,function(v){set("call",v);draw()}));
+  if(r.score!=null){form.appendChild(el("div",{class:"label",text:"And the score?"}));form.appendChild(seg("score-"+r.h,SCORES,cur.score,function(v){set("score",v);draw()}))}
+  form.appendChild(el("label",{class:"label",for:"note-"+r.h,text:"What should have decided it"}));
+  var note=el("textarea",{id:"note-"+r.h,placeholder:"What the engine got wrong or missed, and what you would look at first for this kind of creator."});note.value=cur.note;note.addEventListener("input",function(){set("note",note.value)});form.appendChild(note);
+  if(r.draft){form.appendChild(el("label",{class:"label",for:"dnote-"+r.h,text:"Feedback on the draft"}));var dn=el("textarea",{id:"dnote-"+r.h,placeholder:"Tone, the video reference, the angle, anything you would rewrite."});dn.value=cur.draft_note;dn.addEventListener("input",function(){set("draft_note",dn.value)});form.appendChild(dn)}
+  var st=el("span",{class:"status",id:"st-"+r.h,text:fb[r.h]&&!dirty[r.h]?"Saved "+(fb[r.h].updated||"").slice(0,16).replace("T"," "):(dirty[r.h]?"Unsaved changes":"")});
+  var save=el("button",{class:"primary",type:"button",text:"Save feedback"});
+  save.addEventListener("click",function(){
+    var body=Object.assign({handle:r.h,group:r.group,engine_reason:r.reason||"",engine_score:r.score==null?null:r.score,call:null,score:null,note:"",draft_note:""},fb[r.h]||{},dirty[r.h]||{},{updated:new Date().toISOString()});
+    if(!db){fb[r.h]=body;delete dirty[r.h];local("cal-fb-"+r.h,JSON.stringify(body));draw();progress();return}
+    save.disabled=true;st.className="status";st.textContent="Saving…";
+    db.doc("feedback/"+r.h).set(body).then(function(){fb[r.h]=body;delete dirty[r.h];try{localStorage.removeItem("audit-draft-"+r.h)}catch(e){}draw();progress()},
+      function(e){save.disabled=false;st.className="status err";st.textContent="Not saved ("+((e&&e.code)||"error")+"). Your text is still here; try again."})});
+  form.appendChild(el("div",{class:"tools"},[save,st]));
+  R.appendChild(form);
+  return el("div",{class:"detail"},[L,R])}
+
+function draw(){
+  var box=$("list"),rows=D.creators.filter(matches),keep=document.activeElement&&document.activeElement.id,sel=null;
+  if(keep&&document.activeElement.tagName==="TEXTAREA")sel=[document.activeElement.selectionStart,document.activeElement.selectionEnd];
+  box.textContent="";
+  if(!rows.length){box.appendChild(el("div",{class:"empty",text:"No creators match these filters."}));return}
+  rows.forEach(function(r){var row=el("div",{class:"row"},[head(r)]);if(state.open[r.h])row.appendChild(detail(r));box.appendChild(row)});
+  if(keep&&$(keep)){$(keep).focus();if(sel){try{$(keep).setSelectionRange(sel[0],sel[1])}catch(e){}}}}
+function progress(){var done=D.creators.filter(function(r){return fb[r.h]}).length,pass=D.creators.filter(function(r){return r.verdict}).length,pd=D.creators.filter(function(r){return r.verdict&&fb[r.h]}).length;$("progress").textContent="Feedback on "+pd+" of "+pass+" vetted creators, "+done+" of "+D.creators.length+" in total"}
+
+// restore unsent drafts kept in this browser
+D.creators.forEach(function(r){var s=local("audit-draft-"+r.h);if(s){try{dirty[r.h]=JSON.parse(s)}catch(e){}}});
+var gdraft=local("audit-draft-general");if(gdraft)$("general-note").value=gdraft;
+$("general-note").addEventListener("input",function(e){local("audit-draft-general",e.target.value)});
+$("general-save").addEventListener("click",function(){
+  var st=$("general-status");
+  if(!db){local("cal-general",$("general-note").value);st.className="status ok";st.textContent="Kept in this browser. Use Copy my feedback to hand it over.";return}
+  st.className="status";st.textContent="Saving…";
+  db.doc("general/"+D.run).set({run:D.run,note:$("general-note").value,updated:new Date().toISOString()}).then(function(){st.className="status ok";st.textContent="Saved";try{localStorage.removeItem("audit-draft-general")}catch(e){}},
+    function(e){st.className="status err";st.textContent="Not saved ("+((e&&e.code)||"error")+"). Try again."})});
+
+if(D.hidden_rejections>0)$("hidden-note").textContent=D.hidden_rejections+" more gate rejections are not shown; the sample covers each reject reason.";
+$("copy-all").addEventListener("click",function(){
+  var payload=JSON.stringify({run:D.run,general:$("general-note").value,feedback:Object.keys(fb).map(function(k){return fb[k]})},null,1),st=$("copy-status");
+  function fallback(){var t=document.createElement("textarea");t.value=payload;t.id="copy-fallback";t.style.minHeight="160px";st.textContent="Select all of this and copy it:";st.parentNode.parentNode.insertBefore(t,st.parentNode.nextSibling);t.focus();t.select()}
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(payload).then(function(){st.className="status ok";st.textContent="Copied. Paste it to Claude."},fallback)}else fallback()});
+drawChips();draw();progress();
+
+// ---- store: light up when it arrives ----
+var cl=window.claude;
+(cl&&cl.use?cl.use("db"):Promise.resolve(null)).then(function(store){
+  db=store;if(!db){$("db-notice").hidden=false;D.creators.forEach(function(r){var x=local("cal-fb-"+r.h);if(x){try{fb[r.h]=JSON.parse(x)}catch(e){}}});var g=local("cal-general");if(g&&!$("general-note").value)$("general-note").value=g;draw();progress();return}
+  db.collection("feedback").onSnapshot(function(snap){var next={};snap.docs.forEach(function(d){next[d.id]=d.data()});fb=next;draw();progress()},function(){ $("db-notice").hidden=false });
+  db.doc("general/"+D.run).get().then(function(s){if(s.exists&&!local("audit-draft-general")){$("general-note").value=(s.data()||{}).note||"";$("general-status").textContent="Saved "+((s.data()||{}).updated||"").slice(0,16).replace("T"," ")}},function(){});
+});
+})();
+</script>
