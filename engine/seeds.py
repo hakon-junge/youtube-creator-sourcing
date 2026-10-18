@@ -70,18 +70,25 @@ def transcripts_on(st):
 
 def load(brand):
     p = path(brand)
-    return json.load(open(p)) if os.path.exists(p) else None
+    if not os.path.exists(p):
+        return None
+    with open(p) as f:
+        return json.load(f)
 
 
 def save(brand, data):
     os.makedirs(os.path.dirname(path(brand)), exist_ok=True)
-    json.dump(data, open(path(brand), "w"), indent=1, ensure_ascii=False)
+    with open(path(brand), "w") as f:
+        json.dump(data, f, indent=1, ensure_ascii=False)
 
 
 def _angles_file(brand):
     p = angles_path(brand)
     try:
-        return json.load(open(p)) if os.path.exists(p) else {}
+        if not os.path.exists(p):
+            return {}
+        with open(p) as f:
+            return json.load(f)
     except Exception:
         return {}
 

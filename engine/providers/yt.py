@@ -216,9 +216,10 @@ def _load_key():
     k = _os.environ.get("YOUTUBE_API_KEY")
     p = _os.path.join(_ROOT, ".env")
     if not k and _os.path.exists(p):
-        for line in open(p):
-            if line.strip().startswith("YOUTUBE_API_KEY="):
-                k = line.split("=", 1)[1].strip().strip('"').strip("'")
+        with open(p) as f:
+            for line in f:
+                if line.strip().startswith("YOUTUBE_API_KEY="):
+                    k = line.split("=", 1)[1].strip().strip('"').strip("'")
     return k or None
 
 
@@ -251,7 +252,8 @@ def _pacific_day():
 
 def _ledger_read():
     try:
-        return _json.load(open(_LEDGER))
+        with open(_LEDGER) as f:
+            return _json.load(f)
     except Exception:
         return {}
 
@@ -266,7 +268,10 @@ def _ledger_add(units=0, runs=0, tag=None):
         ru[tag] = ru.get(tag, 0) + units
     d = {k: v for k, v in sorted(d.items())[-14:]}  # keep two weeks
     _os.makedirs(_os.path.dirname(_LEDGER), exist_ok=True)
-    tmp = _LEDGER + ".tmp"; _json.dump(d, open(tmp, "w"), indent=1); _os.replace(tmp, _LEDGER)
+    tmp = _LEDGER + ".tmp"
+    with open(tmp, "w") as f:  # closed (flushed) before it replaces the ledger
+        _json.dump(d, f, indent=1)
+    _os.replace(tmp, _LEDGER)
     return rec
 
 

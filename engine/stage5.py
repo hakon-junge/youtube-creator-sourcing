@@ -114,6 +114,7 @@ def write_all(brand, run_date, L, pain, creators):
         w = csv.DictWriter(f, fieldnames=list(rows[0].keys()))
         w.writeheader()
         w.writerows(rows)
-    json.dump({"brand": brand, "date": run_date, "creators": out}, open(os.path.join(ROOT, "out", brand, run_date, "stage5.json"), "w"), indent=1, ensure_ascii=False)
+    with open(os.path.join(ROOT, "out", brand, run_date, "stage5.json"), "w") as f:
+        json.dump({"brand": brand, "date": run_date, "creators": out}, f, indent=1, ensure_ascii=False)
     missing = sorted(set(hand) - {c["handle"] for c in creators})
     return d, missing, skipped
